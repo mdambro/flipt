@@ -1,0 +1,39 @@
+log:
+  # Lee el nivel de log desde la variable de entorno o usa INFO por defecto
+  level: ${env:FLIPT_LOG_LEVEL:-INFO}
+  encoding: json
+
+server:
+  protocol: http
+  host: 0.0.0.0
+  http_port: 8080
+  grpc_port: 9000
+
+# Configuración para utilizar GitOps
+# Flipt sincronizará (pull/push) los estados de las flags en el repositorio indicado
+storage:
+  default:
+    remote: "${env:FLIPT_GIT_REPO}"
+    branch: "main"
+    poll_interval: "1m"
+    fetch_policy: "lenient"
+    credentials: "github"
+    backend:
+      type: local
+      # Almacena de forma local dentro del volumen del contenedor el repositorio clonado
+      path: "/var/opt/flipt/storage"
+
+# Especificamos las credenciales tomadas del .env para poder sincronizar
+credentials:
+  github:
+    type: access_token
+    access_token: "${env:FLIPT_GIT_TOKEN}"
+cors:
+  enabled: true
+  allowed_origins:
+    - "*"
+  allowed_headers:
+    - Content-Type
+    - Authorization
+    - X-Requested-With
+    - x-flipt-environment
