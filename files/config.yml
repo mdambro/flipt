@@ -12,16 +12,35 @@ server:
 # Configuración para utilizar GitOps
 # Flipt sincronizará (pull/push) los estados de las flags en el repositorio indicado
 storage:
-  default:
+  production:
     remote: "${env:FLIPT_GIT_REPO}"
-    branch: "main"
-    poll_interval: "1m"
+    branch: "production"
+    poll_interval: "10m"
     fetch_policy: "lenient"
     credentials: "github"
     backend:
       type: local
       # Almacena de forma local dentro del volumen del contenedor el repositorio clonado
-      path: "/var/opt/flipt/storage"
+      path: "/var/opt/flipt/storage/production"
+  development:
+    remote: "${env:FLIPT_GIT_REPO}"
+    branch: "development"
+    poll_interval: "10m"
+    fetch_policy: "lenient"
+    credentials: "github"
+    backend:
+      type: local
+      # Almacena de forma local dentro del volumen del contenedor el repositorio clonado
+      path: "/var/opt/flipt/storage/development"
+
+environments:
+  production:
+    name: "production"
+    storage: "production"
+    default: true
+  development:
+    name: "development"
+    storage: "development"
 
 # Especificamos las credenciales tomadas del .env para poder sincronizar
 credentials:
