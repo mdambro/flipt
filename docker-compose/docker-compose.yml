@@ -1,0 +1,22 @@
+services:
+  flipt:
+    container_name: flipt
+    image: docker.flipt.io/flipt/flipt:v2
+    # Disable ports - they are mapped on the host for external access
+    #ports:
+    #  - "${FLIPT_HOST_HTTP_PORT:-8080}:8080"
+    #  - "${FLIPT_HOST_GRPC_PORT:-9000}:9000"
+
+    # Montamos el archivo de configuración en la ruta por defecto que lee Flipt
+    # Y el volumen de base de datos local / sqlite (gratis)
+    volumes:
+      - ../files/config.yml:/etc/flipt/config/default.yml:ro
+      - flipt_data:/var/opt/flipt
+    env_file:
+      - .env
+    tty: true
+    restart: unless-stopped
+
+volumes:
+  flipt_data:
+    name: flipt_data_volume
